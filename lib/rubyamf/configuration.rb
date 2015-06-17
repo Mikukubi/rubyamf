@@ -82,7 +82,7 @@ module RubyAMF
     # Serialization options
     attr_accessor :translate_case, :auto_class_mapping, :use_array_collection,
                   :hash_key_access, :preload_models, :check_for_associations,
-                  :ignore_fields
+                  :ignore_fields, :auto_class_mapping_params
 
     def initialize
       @gateway_path = "/rubyamf/gateway"
@@ -92,6 +92,7 @@ module RubyAMF
 
       @translate_case = false
       @auto_class_mapping = false
+      @auto_class_mapping_params = false
       @use_array_collection = false
       @hash_key_access = :string
       @preload_models = []

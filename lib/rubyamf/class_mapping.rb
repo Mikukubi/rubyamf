@@ -35,6 +35,8 @@ module RubyAMF
       # Extract and validate ruby and AS class names
       ruby_class = params[:ruby]
       as_class = params[:as] || params[:flash] || params[:actionscript]
+      return unless ruby_class
+      return unless ruby_class['::'] || Object.const_defined?(ruby_class)
       raise "Must pass ruby class name under :ruby key" unless ruby_class
       raise "Must pass as class name under :flash, :as, or :actionscript key" unless as_class
 
@@ -149,9 +151,10 @@ module RubyAMF
       ruby_class_name = @mappings.get_ruby_class_name as_class_name
 
       # Auto-map if necessary, removing namespacing to create mapped class name
-      if RubyAMF.configuration.auto_class_mapping && as_class_name && ruby_class_name.nil?
+      if RubyAMF.configuration.auto_class_mapping_params && as_class_name && ruby_class_name.nil?
         ruby_class_name = as_class_name.split('.').pop
         @mappings.map :as => as_class_name, :ruby => ruby_class_name
+        ruby_class_name = @mappings.get_ruby_class_name as_class_name
       end
 
       # Create ruby object
@@ -198,6 +201,8 @@ module RubyAMF
 
       # Handle custom init
       if obj.respond_to?(:rubyamf_init)
+        RubyAMF.logger.error props.inspect
+        RubyAMF.logger.error dynamic_props.inspect
         obj.rubyamf_init props, dynamic_props
       else
         # Fall through to default populator
